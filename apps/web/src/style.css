@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme inline {
+  --default-font-family: "Google Sans", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
