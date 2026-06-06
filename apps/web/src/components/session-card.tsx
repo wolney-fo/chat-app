@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { dayjs } from "../lib/dayjs";
 
 interface SessionCardProps {
@@ -8,6 +9,7 @@ interface SessionCardProps {
 }
 
 export function SessionCard({
+  id,
   title,
   lastMessage,
   lastMessageAt,
@@ -15,7 +17,9 @@ export function SessionCard({
   const isActive: boolean = false;
 
   return (
-    <div
+    <Link
+      to="/chats/$id"
+      params={{ id }}
       data-active={isActive}
       title={lastMessage}
       className="flex items-center gap-2 w-full p-2 hover:bg-zinc-100 data-[active=true]:bg-zinc-100 rounded-lg"
@@ -31,6 +35,6 @@ export function SessionCard({
       <p className="text-xs text-zinc-400 mb-auto">
         {dayjs(lastMessageAt).fromNow()}
       </p>
-    </div>
+    </Link>
   );
 }
