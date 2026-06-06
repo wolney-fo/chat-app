@@ -11,12 +11,17 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.0",
+    "dayjs": "^1.11.21",
+    "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "tailwind-merge": "^3.6.0",
+    "tailwind-variants": "^3.2.2",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@tanstack/router-plugin": "^1.168.16",
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

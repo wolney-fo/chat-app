@@ -1,7 +1,11 @@
+import { Chat } from "./components/chat";
+import { Sidebar } from "./components/sidebar";
+
 export function App() {
   return (
-    <div>
-      <h1 className="text-4xl font-bold text-center">Chat App</h1>
+    <div className="flex h-screen w-screen">
+      <Sidebar />
+      <Chat />
     </div>
   );
 }
