@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch --env-file .env src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,9 +15,13 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
+    "@fastify/jwt": "^10.1.0",
+    "bcryptjs": "^3.0.3",
     "fastify": "^5.8.5",
     "fastify-type-provider-zod": "^6.1.0",
+    "mongodb": "^7.2.0",
     "zod": "^4.4.3"
   }
 }
