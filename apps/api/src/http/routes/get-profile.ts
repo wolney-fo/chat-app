@@ -18,6 +18,8 @@ export async function getProfile(app: FastifyInstance) {
 
       delete user.passwordHash;
 
-      return reply.status(200).send(user);
+      return reply.status(200).send({
+        user,
+      });
     });
 }

@@ -35,7 +35,7 @@ export async function registerUser(app: FastifyInstance) {
         passwordHash,
       });
 
-      return reply.status(201).send(result);
+      return reply.status(204).send();
     },
   );
 }
