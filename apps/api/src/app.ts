@@ -8,6 +8,7 @@ import fastifyJwt from "@fastify/jwt";
 import fastifyCookie from "@fastify/cookie";
 import { routes } from "./http/routes";
 import { env } from "./env";
+import fastifyWebsocket from "@fastify/websocket";
 
 export const app = fastify();
 
@@ -29,6 +30,8 @@ app.register(fastifyJwt, {
 });
 
 app.register(fastifyCookie);
+
+app.register(fastifyWebsocket);
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
