@@ -3,6 +3,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { compare } from "bcryptjs";
 import { users } from "../../database/mongo-client";
+import { env } from "../../env";
 
 export async function authenticate(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -42,7 +43,7 @@ export async function authenticate(app: FastifyInstance) {
       return reply
         .setCookie("refreshToken", refreshToken, {
           path: "/",
-          secure: true,
+          secure: env.NODE_ENV === "production",
           sameSite: true,
           httpOnly: true,
         })
