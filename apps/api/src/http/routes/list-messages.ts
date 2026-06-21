@@ -36,7 +36,7 @@ export async function listMessages(app: FastifyInstance) {
         .find({
           chatId: new ObjectId(chatId),
         })
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: 1 })
         .limit(100)
         .toArray();
 
