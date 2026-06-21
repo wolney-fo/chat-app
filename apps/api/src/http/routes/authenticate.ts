@@ -35,10 +35,10 @@ export async function authenticate(app: FastifyInstance) {
         sub: user._id,
       });
 
-      const refreshToken = await reply.jwtSign({
-        sub: user._id,
-        expiresIn: "7d",
-      });
+      const refreshToken = await reply.jwtSign(
+        { sub: user._id },
+        { expiresIn: "7d" },
+      );
 
       return reply
         .setCookie("refreshToken", refreshToken, {
