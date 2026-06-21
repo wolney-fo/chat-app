@@ -1,11 +1,11 @@
-import { ArrowUpIcon } from "lucide-react";
-import { Message } from "./message";
 import { useEffect, useRef, useState } from "react";
+import { useCurrentUser } from "../hooks/use-current-user";
 import {
   chatSocketEventSchema,
   type ChatMessageSchema,
 } from "../http/schemas/chat-message";
-import { useCurrentUser } from "../hooks/use-current-user";
+import { Message } from "./message";
+import { SendMessageForm } from "./send-message-form";
 
 interface ChatProps {
   chatId: string;
@@ -97,17 +97,7 @@ export function Chat({ chatId }: ChatProps) {
         )}
       </div>
 
-      <form className="flex items-center gap-4 w-11/12 max-w-2xl p-4 bg-indigo-50 border border-zinc-200 rounded-xl mb-8 shadow-sm shadow-indigo-400/50">
-        <input
-          className="outline-none flex-1"
-          type="text"
-          placeholder="Type a message"
-          autoComplete="off"
-        />
-        <button className="p-2 bg-indigo-500 rounded-full cursor-pointer">
-          <ArrowUpIcon className="size-5 text-white" />
-        </button>
-      </form>
+      <SendMessageForm chatId={chatId} />
     </div>
   );
 }
