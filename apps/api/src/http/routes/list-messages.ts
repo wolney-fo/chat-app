@@ -40,10 +40,21 @@ export async function listMessages(app: FastifyInstance) {
         .limit(100)
         .toArray();
 
-      socket.send(JSON.stringify(existentChatMessages));
+      socket.send(
+        JSON.stringify({
+          type: "history",
+          messages: existentChatMessages,
+          lastFectedAt: new Date(),
+        }),
+      );
 
       const unsubscribe = messaging.subscribe(chatId, (message) => {
-        socket.send(JSON.stringify(message));
+        socket.send(
+          JSON.stringify({
+            type: "message",
+            message,
+          }),
+        );
       });
 
       socket.on("close", unsubscribe);
