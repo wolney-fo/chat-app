@@ -8,5 +8,5 @@ export const Route = createFileRoute("/chats/$id")({
 function RouteComponent() {
   const { id } = Route.useParams();
 
-  return <Chat />;
+  return <Chat chatId={id} />;
 }

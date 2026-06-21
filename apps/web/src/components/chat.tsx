@@ -1,32 +1,62 @@
 import { ArrowUpIcon } from "lucide-react";
 import { Message } from "./message";
+import { useEffect, useRef, useState } from "react";
+import {
+  chatSocketEventSchema,
+  type ChatMessageSchema,
+} from "../http/schemas/chat-message";
+import { useCurrentUser } from "../hooks/use-current-user";
 
-export function Chat() {
-  const messages: {
-    id: string;
-    side: "received" | "sent";
-    content: string;
-    createdAt: Date;
-  }[] = [
-    {
-      id: "1",
-      side: "received",
-      content: "Hey! Whats up",
-      createdAt: new Date(2026, 5, 5, 21, 16),
-    },
-    {
-      id: "2",
-      side: "sent",
-      content: "Hey!! Here you are",
-      createdAt: new Date(2026, 5, 5, 21, 24),
-    },
-    {
-      id: "3",
-      side: "received",
-      content: "E o PIX?",
-      createdAt: new Date(2026, 5, 5, 21, 26),
-    },
-  ];
+interface ChatProps {
+  chatId: string;
+}
+
+const BOTTOM_THRESHOLD_PX = 100;
+
+export function Chat({ chatId }: ChatProps) {
+  const user = useCurrentUser();
+
+  const [messages, setMessages] = useState<ChatMessageSchema[]>([]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isAtBottomRef = useRef(true);
+
+  function handleScroll() {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+
+    isAtBottomRef.current = distanceFromBottom < BOTTOM_THRESHOLD_PX;
+  }
+
+  useEffect(() => {
+    if (!isAtBottomRef.current) return;
+
+    scrollContainerRef.current?.scrollTo({
+      top: scrollContainerRef.current.scrollHeight,
+    });
+  }, [messages]);
+
+  useEffect(() => {
+    const websocket = new WebSocket(
+      `${import.meta.env.DEV ? "ws://" : "wss://"}${import.meta.env.VITE_API_URI}/chats/${chatId}/messages`,
+    );
+
+    websocket.addEventListener("message", (event) => {
+      const data = JSON.parse(event.data);
+      const parsedData = chatSocketEventSchema.parse(data);
+
+      if (parsedData.type === "history") {
+        setMessages(parsedData.messages);
+      } else {
+        setMessages((prev) => [...prev, parsedData.message]);
+      }
+    });
+
+    return () => websocket.close();
+  }, [chatId]);
 
   return (
     <div className="flex flex-col items-center flex-1 bg-zinc-50">
@@ -34,13 +64,17 @@ export function Chat() {
         <h2 className="font-semibold text-lg text-center">Wolney</h2>
       </header>
 
-      <div className="flex-1 w-full py-4 overflow-y-auto">
+      <div
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 w-full py-4 overflow-y-auto"
+      >
         {messages.length > 0 ? (
           <div className="w-11/12 max-w-5xl space-y-2 mx-auto">
             {messages.map((message) => (
               <Message
-                key={message.id}
-                side={message.side}
+                key={`${chatId}-messages-${message._id}`}
+                side={message.senderId === user?._id ? "sent" : "received"}
                 content={message.content}
                 createdAt={message.createdAt}
               />

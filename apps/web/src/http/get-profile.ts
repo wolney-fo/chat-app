@@ -5,9 +5,12 @@ export interface User {
 }
 
 export async function getProfile(): Promise<{ user: User }> {
-  const response = await fetch("http://localhost:3333/me", {
-    credentials: "include",
-  });
+  const response = await fetch(
+    `${import.meta.env.DEV ? "http://" : "https://"}${import.meta.env.VITE_API_URI}/me`,
+    {
+      credentials: "include",
+    },
+  );
 
   if (!response.ok) {
     throw new Error("Unauthorized");

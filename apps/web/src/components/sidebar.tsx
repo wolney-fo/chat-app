@@ -7,9 +7,12 @@ export function Sidebar() {
   const { data, isLoading } = useQuery({
     queryKey: ["chats"],
     queryFn: async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/chats`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${import.meta.env.DEV ? "http://" : "https://"}${import.meta.env.VITE_API_URI}/chats`,
+        {
+          credentials: "include",
+        },
+      );
       const data = await response.json();
 
       return chatsListSchema.parse(data).chats;
