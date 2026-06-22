@@ -1,46 +1,28 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { z } from "zod";
 import { verifyJWT } from "../middlewares/verify-jwt";
 import { chats } from "../../database/mongo-client";
 import { ObjectId } from "mongodb";
+import { chatEvents } from "../../utils/messaging-pub-sub";
 
 export async function listChats(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
     "/chats",
     {
+      websocket: true,
       onRequest: [verifyJWT],
       schema: {
         tags: ["Chats"],
-        summary: "List the authenticated user's chats",
+        summary: "Subscribe to the authenticated user's chat list in real time",
         description:
-          "Returns every chat the authenticated user is a member of, along with each chat's most recent message.",
+          'Upgrades the connection to a WebSocket. On connect, the server sends the user\'s chats as a single `{ type: "history", chats, lastFectedAt }` frame, then streams each created or updated chat as a `{ type: "chat", chat }` frame for as long as the connection stays open.',
         security: [{ cookieAuth: [] }],
-        response: {
-          200: z.object({
-            chats: z.array(
-              z.object({
-                _id: z.string(),
-                name: z.string(),
-                lastMessage: z
-                  .object({
-                    content: z.string(),
-                    createdAt: z.coerce.date(),
-                  })
-                  .nullable(),
-              }),
-            ),
-          }),
-          401: z
-            .object({ message: z.string() })
-            .describe("Missing or invalid session."),
-        },
       },
     },
-    async (request, reply) => {
+    async (socket, request) => {
       const { sub } = request.user;
 
-      const userChats = await chats
+      const userExistentChats = await chats
         .aggregate<{
           _id: ObjectId;
           name: string;
@@ -73,12 +55,28 @@ export async function listChats(app: FastifyInstance) {
         ])
         .toArray();
 
-      return reply.status(200).send({
-        chats: userChats.map((chat) => ({
-          _id: chat._id.toString(),
-          name: chat.name,
-          lastMessage: chat.lastMessage,
-        })),
+      socket.send(
+        JSON.stringify({
+          type: "history",
+          chats: userExistentChats.map((chat) => ({
+            _id: chat._id.toString(),
+            name: chat.name,
+            lastMessage: chat.lastMessage,
+          })),
+          lastFectedAt: new Date(),
+        }),
+      );
+
+      const unsubscribe = chatEvents.subscribe(sub, (chat) => {
+        socket.send(
+          JSON.stringify({
+            type: "chat",
+            chat,
+          }),
+        );
       });
-    });
+
+      socket.on("close", unsubscribe);
+    },
+  );
 }

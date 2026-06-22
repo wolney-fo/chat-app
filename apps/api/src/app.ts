@@ -44,7 +44,7 @@ app.register(fastifySwagger, {
     info: {
       title: "ChatApp",
       description: "API for ChatApp, a real-time messaging web platform.",
-      version: "0.1.0",
+      version: "0.2.0",
     },
     tags: [
       {

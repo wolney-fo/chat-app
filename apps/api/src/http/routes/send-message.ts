@@ -4,7 +4,7 @@ import { z } from "zod";
 import { verifyJWT } from "../middlewares/verify-jwt";
 import { chats, messages } from "../../database/mongo-client";
 import { ObjectId } from "mongodb";
-import { messaging } from "../../utils/messaging-pub-sub";
+import { chatEvents, messaging } from "../../utils/messaging-pub-sub";
 
 export async function sendMessage(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -67,6 +67,14 @@ export async function sendMessage(app: FastifyInstance) {
         content,
         createdAt: creationMoment,
       });
+
+      for (const memberId of chat.members) {
+        chatEvents.publish(memberId.toString(), {
+          _id: chatId,
+          name: chat.name,
+          lastMessage: { content, createdAt: creationMoment },
+        });
+      }
 
       return reply.status(201).send({
         message: {
