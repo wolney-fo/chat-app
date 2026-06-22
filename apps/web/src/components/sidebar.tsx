@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { SessionCard } from "./session-card";
 import { chatsSocketEventSchema, type ChatSchema } from "../http/schemas/chats";
 import { SessionCardSkeleton } from "./session-card-skeleton";
+import { Link } from "@tanstack/react-router";
+import { NewChatDialog } from "./new-chat-dialog";
 
 export function Sidebar() {
   const [chats, setChats] = useState<ChatSchema[] | null>(null);
@@ -36,7 +38,14 @@ export function Sidebar() {
 
   return (
     <aside className="flex flex-col justify-between p-4 md:w-96 border-r border-zinc-200">
-      <div className="space-y-2">
+      <header className="flex items-center justify-between py-4 border-b border-zinc-200">
+        <Link to={"/"} className="font-black text-2xl">
+          ChatApp
+        </Link>
+
+        <NewChatDialog />
+      </header>
+      <div className="space-y-2 flex-1">
         {chats === null ? (
           <>
             <SessionCardSkeleton />

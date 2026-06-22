@@ -16,7 +16,7 @@ const RootLayout = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex h-screen w-screen">
+      <div className="flex h-screen w-screen isolate">
         {showSidebar && <Sidebar />}
         <Outlet />
       </div>
