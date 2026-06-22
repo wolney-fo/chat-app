@@ -11,10 +11,26 @@ export async function createChat(app: FastifyInstance) {
     {
       onRequest: [verifyJWT],
       schema: {
+        tags: ["Chats"],
+        summary: "Create a new chat",
+        description:
+          "Creates a new chat with the given name and members. The authenticated user is automatically added as a member.",
+        security: [{ cookieAuth: [] }],
         body: z.object({
           name: z.string().min(2),
           membersIds: z.array(z.string()),
         }),
+        response: {
+          201: z.object({
+            chat: z.object({
+              acknowledged: z.boolean(),
+              insertedId: z.string(),
+            }),
+          }),
+          401: z
+            .object({ message: z.string() })
+            .describe("Missing or invalid session."),
+        },
       },
     },
     async (request, reply) => {
@@ -29,7 +45,10 @@ export async function createChat(app: FastifyInstance) {
       });
 
       return reply.status(201).send({
-        chat: result,
+        chat: {
+          acknowledged: result.acknowledged,
+          insertedId: result.insertedId.toString(),
+        },
       });
     },
   );

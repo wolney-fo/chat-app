@@ -13,6 +13,11 @@ export async function listMessages(app: FastifyInstance) {
       websocket: true,
       onRequest: [verifyJWT],
       schema: {
+        tags: ["Messages"],
+        summary: "Subscribe to a chat's messages in real time",
+        description:
+          'Upgrades the connection to a WebSocket. On connect, the server sends the chat\'s message history as a single `{ type: "history", messages, lastFectedAt }` frame, then streams each new message as a `{ type: "message", message }` frame for as long as the connection stays open.',
+        security: [{ cookieAuth: [] }],
         params: z.object({
           chatId: z.string(),
         }),

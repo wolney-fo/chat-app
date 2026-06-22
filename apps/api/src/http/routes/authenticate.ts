@@ -10,10 +10,24 @@ export async function authenticate(app: FastifyInstance) {
     "/sessions",
     {
       schema: {
+        tags: ["Auth"],
+        summary: "Authenticate with e-mail and password",
+        description:
+          "Validates the user's credentials and starts a new session.",
         body: z.object({
           email: z.email(),
           password: z.string().min(8),
         }),
+        response: {
+          204: z
+            .void()
+            .describe(
+              "Authenticated successfully. Session cookie has been set.",
+            ),
+          401: z
+            .object({ message: z.string() })
+            .describe("Invalid e-mail or password."),
+        },
       },
     },
     async (request, reply) => {

@@ -12,12 +12,28 @@ export async function sendMessage(app: FastifyInstance) {
     {
       onRequest: [verifyJWT],
       schema: {
+        tags: ["Messages"],
+        summary: "Send a message to a chat",
+        description:
+          "Persists a new message in the given chat and broadcasts it to subscribed real-time listeners.",
+        security: [{ cookieAuth: [] }],
         params: z.object({
           chatId: z.string(),
         }),
         body: z.object({
           content: z.string().nonempty(),
         }),
+        response: {
+          201: z.object({
+            message: z.object({
+              _id: z.string(),
+            }),
+          }),
+          400: z.object({ message: z.string() }).describe("Chat not found."),
+          401: z
+            .object({ message: z.string() })
+            .describe("Missing or invalid session."),
+        },
       },
     },
     async (request, reply) => {
@@ -54,7 +70,7 @@ export async function sendMessage(app: FastifyInstance) {
 
       return reply.status(201).send({
         message: {
-          _id: result.insertedId,
+          _id: result.insertedId.toString(),
         },
       });
     },

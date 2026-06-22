@@ -9,11 +9,20 @@ export async function registerUser(app: FastifyInstance) {
     "/users",
     {
       schema: {
+        tags: ["Users"],
+        summary: "Register a new user",
+        description: "Creates a new user account with a unique e-mail address.",
         body: z.object({
           name: z.string().nonempty(),
           email: z.email(),
           password: z.string().min(8),
         }),
+        response: {
+          204: z.void().describe("User created successfully."),
+          409: z
+            .object({ message: z.string() })
+            .describe("A user with the same e-mail already exists."),
+        },
       },
     },
     async (request, reply) => {
