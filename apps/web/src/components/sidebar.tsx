@@ -20,7 +20,7 @@ export function Sidebar() {
   });
 
   return (
-    <aside className="flex flex-col justify-between p-4 border-r border-zinc-200">
+    <aside className="flex flex-col justify-between p-4 md:w-96 border-r border-zinc-200">
       <div className="space-y-2">
         {isLoading ? (
           <>
