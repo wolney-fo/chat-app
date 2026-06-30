@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import { loginFormSchema, type LoginFormSchema } from "../http/schemas/login";
 import { authenticate } from "../http/authenticate";
 
@@ -75,6 +75,15 @@ export function LoginForm() {
           {isSubmitting ? "Entrando..." : "Login"}
         </button>
       </form>
+      <p className="text-sm text-center text-zinc-500">
+        Não tem conta?{" "}
+        <Link
+          to="/register"
+          className="font-medium text-indigo-500 hover:underline"
+        >
+          Criar conta
+        </Link>
+      </p>
     </div>
   );
 }

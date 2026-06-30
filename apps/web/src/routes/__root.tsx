@@ -12,7 +12,8 @@ const queryClient = new QueryClient();
 
 const RootLayout = () => {
   const { location } = useRouterState();
-  const showSidebar = location.pathname !== "/login";
+  const showSidebar =
+    location.pathname !== "/login" && location.pathname !== "/register";
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -26,7 +27,7 @@ const RootLayout = () => {
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
-    if (location.pathname === "/login") return;
+    if (location.pathname === "/login" || location.pathname === "/register") return;
 
     try {
       await getProfile();
